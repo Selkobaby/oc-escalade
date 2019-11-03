@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!-- ===== Déclaration des DAO ===== -->
+    <bean id="abstractDataImpl" abstract="true">
+        <property name="dataSource" ref="dataSourceEscalade"/>
+    </bean>
+    
+    <bean id="commentaireDao" class="org.escalade.consumer.contract.impl.dao.CommentaireImpl" parent="abstractDataImpl"/>
+    <bean id="compteDao" class="org.escalade.consumer.contract.impl.dao.CompteImpl" parent="abstractDataImpl"/>
+    <bean id="longueurDao" class="org.escalade.consumer.contract.impl.dao.LongueurImpl" parent="abstractDataImpl"/>
+    <bean id="resaTopoDao" class="org.escalade.consumer.contract.impl.dao.ResaTopoImpl" parent="abstractDataImpl"/>
+    <bean id="secteurDao" class="org.escalade.consumer.contract.impl.dao.SecteurImpl" parent="abstractDataImpl"/>
+    <bean id="siteDao" class="org.escalade.consumer.contract.impl.dao.SiteImpl" parent="abstractDataImpl"/>
+    <bean id="topoDao" class="org.escalade.consumer.contract.impl.dao.TopoImpl" parent="abstractDataImpl"/>
+    <bean id="voieDao" class="org.escalade.consumer.contract.impl.dao.VoieImpl" parent="abstractDataImpl"/>
+    <bean id="photoDao" class="org.escalade.consumer.contract.impl.dao.PhotoImpl" parent="abstractDataImpl"/>
+    <bean id="messagerieDao" class="org.escalade.consumer.contract.impl.dao.MessagerieImpl" parent="abstractDataImpl"/>
+
+    <!-- ===== DaoFactory ===== -->
+    <bean id="daoFactory" class="org.escalade.consumer.contract.impl.DaoFactoryImpl">
+        <property name="commentaireDao" ref="commentaireDao"/>
+        <property name="compteDao" ref="compteDao"/>
+        <property name="longueurDao" ref="longueurDao"/>
+        <property name="resaTopoDao" ref="resaTopoDao"/>
+        <property name="secteurDao" ref="secteurDao"/>
+        <property name="siteDao" ref="siteDao"/>
+        <property name="topoDao" ref="topoDao"/>
+        <property name="voieDao" ref="voieDao"/>
+        <property name="photoDao" ref="photoDao"/>
+        <property name="messagerieDao" ref="messagerieDao"/>
+    </bean>
+
+</beans>

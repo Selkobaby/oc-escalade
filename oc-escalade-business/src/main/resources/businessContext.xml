@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="abstractManager" abstract="true">
+        <property name="daoFactory" ref="daoFactory"/>
+    </bean>
+
+    <bean id="commentaireManager" class="org.escalade.business.impl.manager.CommentaireManagerImpl" parent="abstractManager"/>
+    <bean id="compteManager" class="org.escalade.business.impl.manager.CompteManagerImpl" parent="abstractManager"/>
+    <bean id="longueurManager" class="org.escalade.business.impl.manager.LongueurManagerImpl" parent="abstractManager"/>
+    <bean id="resaTopoManager" class="org.escalade.business.impl.manager.ResaTopoManagerImpl" parent="abstractManager"/>
+    <bean id="secteurManager" class="org.escalade.business.impl.manager.SecteurManagerImpl" parent="abstractManager"/>
+    <bean id="siteManager" class="org.escalade.business.impl.manager.SiteManagerImpl" parent="abstractManager"/>
+    <bean id="topoManager" class="org.escalade.business.impl.manager.TopoManagerImpl" parent="abstractManager"/>
+    <bean id="voieManager" class="org.escalade.business.impl.manager.VoieManagerImpl" parent="abstractManager"/>
+    <bean id="photoManager" class="org.escalade.business.impl.manager.PhotoManagerImpl" parent="abstractManager"/>
+    <bean id="messagerieMnager" class="org.escalade.business.impl.manager.MessagerieManagerImpl" parent="abstractManager"/>
+
+    <bean id="managerFactory" class="org.escalade.business.impl.ManagerFactoryImpl">
+        <property name="commentaireManager" ref="commentaireManager"/>
+        <property name="compteManager" ref="compteManager"/>
+        <property name="longueurManager" ref="longueurManager"/>
+        <property name="resaTopoManager" ref="resaTopoManager"/>
+        <property name="secteurManager" ref="secteurManager"/>
+        <property name="siteManager" ref="siteManager"/>
+        <property name="topoManager" ref="topoManager"/>
+        <property name="voieManager" ref="voieManager"/>
+        <property name="photoManager" ref="photoManager"/>
+        <property name="messagerieManager" ref="messagerieMnager"/>
+    </bean>
+
+
+
+</beans>

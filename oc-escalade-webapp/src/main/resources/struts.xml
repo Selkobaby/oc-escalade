@@ -1,0 +1,739 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+    <!-- ============================================ -->
+    <!-- ===== Package de configuration de base ===== -->
+    <!-- ============================================ -->
+    <package name="base" abstract="true" extends="struts-default">
+        <interceptors>
+            <interceptor name="auth" class="org.escalade.webapp.interceptor.AuthInterceptor"/>
+
+            <interceptor-stack name="authenticatedStack">
+                <interceptor-ref name="auth"/>
+                <interceptor-ref name="defaultStack"/>
+            </interceptor-stack>
+        </interceptors>
+
+        <global-results>
+            <result name="error">/jsp/error.jsp</result>
+            <result name="error-forbidden" type="httpheader">
+                <param name="error">403</param>
+            </result>
+        </global-results>
+    </package>
+
+    <!-- ============================================== -->
+    <!-- ===== Package pour les actions publiques ===== -->
+    <!-- ============================================== -->
+    <package name="public" extends="base">
+        <!-- Action par défaut -->
+        <default-action-ref name="index"/>
+
+        <!-- Action "index" -->
+        <action name="index">
+            <result name="success">/jsp/index.jsp</result>
+        </action>
+
+        <!-- ===== Actions Login/Logout ===== -->
+        <action name="login"
+                class="org.escalade.webapp.action.LoginAction"
+                method="doLogin">
+            <result name="input">/jsp/login/login.jsp</result>
+            <result name="success">jsp/index.jsp</result>
+        </action>
+
+        <action name="logout"
+                class="org.escalade.webapp.action.LoginAction"
+                method="doLogout">
+            <result name="success" type="redirectAction">index.action</result>
+        </action>
+
+        <!-- ==== Action pour lister les listSites ==== -->
+        <action name="site_list"
+                class="org.escalade.webapp.action.SiteAction"
+                method="doList">
+            <result>/jsp/site/list.jsp</result>
+        </action>
+
+        <action name="site_detail"
+                class="org.escalade.webapp.action.SiteAction"
+                method="doDetail">
+
+            <result name="success">/jsp/site/detail.jsp</result>
+            <result name="error">/jsp/error.jsp</result>
+        </action>
+
+        <action name="voie_detail"
+                class="org.escalade.webapp.action.VoieAction"
+                method="doDetail">
+            <result name="success">/jsp/voie/detail.jsp</result>
+            <result name="error">/jsp/error.jsp</result>
+        </action>
+
+        <action name="secteur_detail"
+                class="org.escalade.webapp.action.SecteurAction"
+                method="datailSecteur">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="success">jsp/secteur/detail.jsp</result>
+            <result name="error">/jsp/error.jsp</result>
+
+        </action>
+
+        <action name="topo_list"
+                class="org.escalade.webapp.action.TopoAction"
+                method="doList">
+            <result name="success">/jsp/topo/list.jsp</result>
+            <result name="error">/jsp/error.jsp</result>
+        </action>
+
+        <action name="topo_detail"
+                class="org.escalade.webapp.action.TopoAction"
+                method="doDetail">
+            <result name="success">/jsp/topo/detail.jsp</result>
+            <result name="error">/jsp/error.jsp</result>
+        </action>
+
+        <!-- ================================ -->
+        <!-- =====      RECHERCHE       ===== -->
+        <!-- ================================ -->
+
+        <!-- ===== Action permettant de faire une recherche via la Barre de recherche ===== -->
+        <action name="barre_de_recherche"
+                class="org.escalade.webapp.action.SearchEngineAction"
+                method="doSimpleSearch">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="success">/jsp/search_engine/search_result.jsp</result>
+            <result name="error">/jsp/error.jsp</result>
+        </action>
+
+        <!-- ===== Action permettant de faire une recherche avancé ===== -->
+        <action name="advanced_research"
+                class="org.escalade.webapp.action.SearchEngineAction"
+                method="doAdvancedSearch">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">/jsp/search_engine/advanced_search_form.jsp</result>
+            <result name="success">/jsp/search_engine/search_result.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <!-- Création de compte utilisateur -->
+        <action name="creerCompte"
+                class="org.escalade.webapp.action.CompteAction"
+                method="doCreate">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/form_compte.jsp</result>
+            <result name="success">jsp/login/login.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+    </package>
+
+    <!-- ============================================ -->
+    <!-- ===== Package pour les actions privées ===== -->
+    <!-- ============================================ -->
+    <package name="private" extends="base">
+        <default-interceptor-ref name="authenticatedStack"/>
+
+        <!-- ================================================== -->
+        <!-- =====  Renvoie les choix des formulaires     ===== -->
+        <!-- =====  de création des listSites d'escalade  ===== -->
+        <!-- ================================================== -->
+
+        <action name="management_menu">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">RETRIEVE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="success">/jsp/_include/user_menu.jsp</result>
+            <result name="error">/jsp/error.jsp</result>
+        </action>
+
+        <!-- ************************ -->
+        <!-- ACTION SITES D'ESCALADES -->
+        <!-- ************************ -->
+
+        <!-- Récupère les informations pour créer un nouveau site -->
+        <action name="new_site"
+                class="org.escalade.webapp.action.SiteAction"
+                method="doCreate">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/form_site.jsp</result>
+            <result name="success">/jsp/_include/user_menu.jsp</result>
+            <result name="error">/jsp/compte/form_site.jsp</result>
+        </action>
+
+        <!-- Affiche les Sites d'éscalade d'un client -->
+        <action name="sites_by_account"
+                class="org.escalade.webapp.action.SiteAction"
+                method="sitesByAccount">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/_include/user_menu.jsp</result>
+            <result name="success">jsp/site/list_site_of_connected_users.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <!-- Modifier un site d'éscalade par un client -->
+        <action name="modified_site" class="org.escalade.webapp.action.SiteAction" method="modifiedSite">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/form_modified_site.jsp</result>
+            <result name="success">jsp/_include/user_menu.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <!-- Supprimer un site d'éscalade -->
+
+        <action name="del_site" class="org.escalade.webapp.action.SiteAction" method="delSite">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="success" type="redirectAction">site_by_account.action</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <!-- Commentaire site d'éscalade -->
+        <action name="site_commentaire" class="org.escalade.webapp.action.SiteAction" method="siteCommentaire">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="success">jsp/site/detail.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+
+        <!-- *********************************************** -->
+        <!-- **** Création d'un site d'éscalade complet **** -->
+        <!-- *********************************************** -->
+
+        <!-- **** Action création du site **** -->
+        <action name="complete_creation_climbing_site"
+                class="org.escalade.webapp.action.workflowSiteAction"
+                method="completeCreationClimbingSite">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/workflow_site.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <!-- **** Action création du secteur **** -->
+        <action name="complete_creation_climbing_secteur"
+                class="org.escalade.webapp.action.workflowSiteAction"
+                method="completeCreationClimbingSecteur">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/workflow_site.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <!-- **** Action création de la voie **** -->
+        <action name="complete_creation_climbing_voie"
+                class="org.escalade.webapp.action.workflowSiteAction"
+                method="completeCreationClimbingVoie">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/workflow_site.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <!-- **** Action création d'une longueur **** -->
+        <action name="complete_creation_climbing_longueur"
+                class="org.escalade.webapp.action.workflowSiteAction"
+                method="completeCreationClimbingLongueur">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/workflow_site.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <!-- **** Action modification d'une longueur **** -->
+        <action name="modified_Longueur_workflow"
+                class="org.escalade.webapp.action.workflowSiteAction"
+                method="modifiedLongueur">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/workflow_site.jsp</result>
+        </action>
+
+        <!-- **** Action valider le formulaire **** -->
+        <action name="validation_Form"
+                class="org.escalade.webapp.action.workflowSiteAction"
+                method="validationForm">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="success">jsp/index.jsp</result>
+        </action>
+
+
+        <!-- *************************** -->
+        <!-- ***** ACTION SECTEURS ***** -->
+        <!-- *************************** -->
+
+        <!-- Récupère les informations pour créer un nouveau secteur -->
+
+        <!-- **** Créer un nouveau secteur **** -->
+        <action name="new_secteur"
+                class="org.escalade.webapp.action.SecteurAction"
+                method="doCreate">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/form_secteur.jsp</result>
+            <result name="success" type="redirectAction">secteur_by_account.action</result>
+            <result name="error">jsp/creation_forms/form_secteur.jsp</result>
+        </action>
+
+        <!-- **** Mettre à jour un secteur **** -->
+        <action name="modified_secteur" class="org.escalade.webapp.action.SecteurAction" method="modifiedSecteur">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/form_modified_secteur.jsp</result>
+            <result name="success" type="redirectAction">secteur_by_account.action</result>
+            <result name="error">jsp/creation_forms/form_modified_secteur.jsp</result>
+        </action>
+
+        <!-- **** Supprimer un secteur **** -->
+        <action name="del_Secteur" class="org.escalade.webapp.action.SecteurAction" method="delSecteur">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="success" type="redirectAction">secteur_by_account.action</result>
+            <result name="error">jsp/creation_forms/form_secteur.jsp</result>
+        </action>
+
+        <!-- Affiche les listSites d'éscalade d'un client -->
+        <action name="secteur_by_account"
+                class="org.escalade.webapp.action.SecteurAction"
+                method="secteursByAccount">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="success">jsp/secteur/list_secteur_of_connected_users.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <!-- ************************** -->
+        <!-- ****** ACTION VOIES ****** -->
+        <!-- ************************** -->
+
+        <action name="new_voie" class="org.escalade.webapp.action.VoieAction" method="doCreate">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/form_voie.jsp</result>
+            <result name="success" type="redirectAction">voies_by_account.action</result>
+            <result name="error">jsp/creation_forms/form_voie.jsp</result>
+        </action>
+
+        <action name="voies_by_account" class="org.escalade.webapp.action.VoieAction" method="voiesByAccount">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="success">jsp/voie/list_voie_of_connected_users.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <action name="modified_voie" class="org.escalade.webapp.action.VoieAction" method="modifiedVoie">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/form_modified_voie.jsp</result>
+            <result name="success" type="redirectAction">voies_by_account.action</result>
+            <result name="error">jsp/creation_forms/form_modified_voie.jsp</result>
+        </action>
+
+        <action name="del_voie" class="org.escalade.webapp.action.VoieAction" method="delVoie">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">index.jsp</result>
+            <result name="success" type="redirectAction">voies_by_account.action</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <!-- ***************************** -->
+        <!-- ****** ACTION LONGUEUR ****** -->
+        <!-- ***************************** -->
+
+        <!-- Ajouter une nouvelle longueur à une voie -->
+        <action name="new_longueur" class="org.escalade.webapp.action.LongueurAction" method="newLongueur" >
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/form_longueur.jsp</result>
+            <result name="success">jsp/longueur/list_longueur_of_connected_users.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <!--Modifier une longueur-->
+        <action name="modified_longueur" class="org.escalade.webapp.action.LongueurAction" method="modifiedLongueur">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/form_modified_longueur.jsp</result>
+            <result name="success">jsp/longueur/list_longueur_of_connected_users.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <!-- Supprimer une longueur -->
+        <action name="del_longueur" class="org.escalade.webapp.action.LongueurAction" method="delLongueur">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/form_del_Longueur.jsp</result>
+            <result name="success">jsp/longueur/list_longueur_of_connected_users.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <!-- Afficher les longueurs d'une voie -->
+
+
+        <action name="longueur_by_voie" class="org.escalade.webapp.action.LongueurAction" method="longueurByVoie">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="success">jsp/longueur/list_longueur_of_connected_users.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+
+        <!-- ************************** -->
+        <!-- ****** ACTION TOPOS ****** -->
+        <!-- ************************** -->
+
+        <action name="new_topo" class="org.escalade.webapp.action.TopoAction" method="newTopo">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/form_topo.jsp</result>
+            <result name="success" type="redirectAction">topo_by_account.action</result>
+            <result name="error">jsp/error.jsp</result>
+
+        </action>
+
+        <action name="topo_by_account" class="org.escalade.webapp.action.TopoAction" method="topoByAccount">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="success">jsp/topo/list_topo_of_connected_users.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <action name="del_Topo" class="org.escalade.webapp.action.TopoAction" method="delTopo">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="success">jsp/topo/list_topo_of_connected_users.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <action name="modified_topo" class="org.escalade.webapp.action.TopoAction" method="upTopo">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/form_modified_topo.jsp</result>
+            <result name="success" type="redirectAction">topo_by_account.action</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <action name="topo_commentaire" class="org.escalade.webapp.action.TopoAction" method="topoCommentaire">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="success">jsp/topo/detail.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+
+        <!-- **************************** -->
+        <!-- ***** ACTION RESA TOPO ***** -->
+        <!-- **************************** -->
+
+        <action name="resa_topo" class="org.escalade.webapp.action.ResaTopoAction" method="resaTopo">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/form_resa_topo.jsp</result>
+            <result name="success">jsp/topo/result_demande_resa.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <action name="gestion_resa" class="org.escalade.webapp.action.ResaTopoAction" method="gestionResa">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/form_gestion_resa.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <action name="message_resa_topo" class="org.escalade.webapp.action.ResaTopoAction" method="messageResaTopo">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/from_gestion_mesage_resa.jsp</result>
+            <result name="success" type="redirectAction">gestion_resa</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <action name="my_message_resa_topo" class="org.escalade.webapp.action.ResaTopoAction" method="messageResaTopo">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/from_gestion_message_mes_reserv.jsp</result>
+            <result name="success" type="redirectAction">gestion_resa</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <action name="annuler_resa_topo" class="org.escalade.webapp.action.ResaTopoAction" method="annulerResaTopo">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="success" type="redirectAction">gestion_resa.action</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <action name="del_resa_topo" class="org.escalade.webapp.action.ResaTopoAction" method="delResaTopo">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="success">jsp/topo/result_demande_resa.jsp</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+        <action name="refuse_ou_rendu_resa_topo" class="org.escalade.webapp.action.ResaTopoAction" method="refuseOuRenduResaTopo">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="success" type="redirectAction">gestion_resa.action</result>
+            <result name="error">jsp/error.jsp</result>
+
+        </action>
+
+        <action name="accept_resa_topo" class="org.escalade.webapp.action.ResaTopoAction" method="acceptResaTopo">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="success" type="redirectAction">gestion_resa.action</result>
+            <result name="error">jsp/error.jsp</result>
+        </action>
+
+
+        <!-- ************************* -->
+        <!-- ***** ACTION COMPTE ***** -->
+        <!-- ************************* -->
+
+        <action name="modifier_compte_utilisateur"
+                class="org.escalade.webapp.action.CompteAction"
+                method="upCompte">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/form_compte.jsp</result>
+            <result name="success">jsp/login/login.jsp</result>
+            <result name="error">/jsp/compte/form_secteur.jsp</result>
+        </action>
+
+        <action name="supprimer_compte"
+                class="org.escalade.webapp.action.CompteAction"
+                method="supprimerCompteUtilisateur">
+
+            <interceptor-ref name="store">
+                <param name="operationMode">STORE</param>
+            </interceptor-ref>
+            <interceptor-ref name="authenticatedStack"/>
+            <interceptor-ref name="defaultStack"/>
+
+            <result name="input">jsp/creation_forms/form_compte.jsp</result>
+            <result name="success" type="redirectAction">jsp/index.jsp</result>
+            <result name="error">/jsp/compte/form_secteur.jsp</result>
+        </action>
+
+    </package>
+</struts>
