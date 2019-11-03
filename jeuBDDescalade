@@ -1,0 +1,95 @@
+INSERT INTO public.compte
+    (nom, prenom, mail, mot_de_passe)
+VALUES
+    ('bagci', 'yusuf', 'bagciyusuf@live.fr', 'karamanli'),
+    ('boumediene', 'sofiane', 'boum.s@hotmail.fr', 'Siktir77'),
+    ('Elouafi', 'Omar', 'elouafiomar@hotmail.fr', 'elpaco')
+
+INSERT INTO public.site
+    (compte_id, nom, region, description)
+VALUES
+    (1, 'Ablon', 'Auvergne-Rhône-Alpes', 'c’est la falaise d’alpages, nichée à l’écart, dans un recoin sauvage et préservé en plein cœur du massif des Bornes. On est loin de la montagne à touristes, il n’y a plus aucun bruit de moteur...'),
+    (2, 'Ailefroide', 'Provence-Alpes-Côte d''Azur', 'Situé presque au fond de la vallée de la Vallouise, au Nord de L’Argentière la Bessée, existe-t-il meilleur endroit pour grimper en été ? Peut-être, mais Ailefroide a quand même de quoi convaincre. Ici, à 1.500 m d’altitude, on est en pleine ambiance montagne, entourés de sommets, les vrais, comme sur les cartes postales avec de la neige dessus.'),
+    (3, 'Annot', 'Provence-Alpes-Côte d''Azur', 'À mi-chemin entre Dignes les Bains et Nice, un peu perché dans l’arrière-pays montagnard, Annot est l’un des plus beaux spots de grimpe du Sud. Il y a là une forêt à champignons, de ceux que l’on mange en omelette, et que l’on cherche dans les sous-bois panier au bras, et de ceux sur lesquels on grimpe.'),
+    (1, 'Arudy', 'Nouvelle-Aquitaine', 'La vallée d’Ossau est l’une des trois grandes vallées de montagne de la région béarnaise. Elle s’étire du nord au sud depuis Pau jusqu’au col du Pourtalet, à la frontière espagnole, sous le regard bienveillant du pic du Midi d’Ossau (2884 mètres), à la silhouette bicéphale si caractéristique.'),
+    (2, 'Balme de Yenne', 'Auvergne-Rhône-Alpes', 'Dans l’avant-pays savoyard, à la limite entre la Savoie et l’Ain, le Rhône a creusé sur 1 km le défilé de PierreChâtel. En rive gauche et rive droite, les gorges sont bordées de falaises qui surplombent les eaux vertes du fleuve.')
+
+INSERT INTO public.secteur
+    (site_id, nom, description)
+VALUES
+    (1, 'Secteur de la montée : Flakeboard', 'Petit toit, une dülfer, puis sorte de dièdre facile'),
+    (2, 'Alcool : Clairette', 'A 600 m après le panneau Ailefroide direction Pré de Mmadame Carle, petit parking sur la droite. Sente qui remonte l''éboulis puis dans les mélèzes jusqu''au pied de la paroi. trois voies sur ce secteur. Clairette est elle du milieu.'),
+    (3, 'La cave : Adam', 'Massif de grès dans un pays calcaire, le site de Annot est un curiosité du SE, inratable pour ces voies mais surtout pour son ambiance. Des blocs de grès dans une forêt ombragée... ça ne vous rappelle pas Fontainebleau ? Cela s''en approche, le soleil du S en plus !!!'),
+    (4, 'Gaufrette', 'Une multitude de voie excitante pour vous.'),
+    (5, 'Grotte', 'Une grotte magnifique a escalader.')
+
+INSERT INTO public.voie
+    (secteur_id, nom, description, type_voie, cotation, hauteur)
+VALUES
+    (1, 'Couenne', 'Rocher grès et bonne completude', 'Equipée', 6, 10),
+    (2, 'Maryline', 'Belle longueur en dalle sur du beau rocher', 'équipée', 3, 15),
+    (3, 'Cagnes-sur-Mer', 'Départ athlétique sur bonnes prises', 'équipée', 7, 8),
+    (4, 'Justin bridou', 'Rocher grès et bonne completude', 'Equipée', 7, 22),
+    (5, 'Merlin Escobille', 'Dalle noire raide et difficile sur petites prises: il y a ce qu''il faut, lecture et louvoiement.', 'Equipée', 4, 9)
+
+INSERT INTO public.longueur
+    (voie_id, num_longueur, hauteur, cotation, num_relai)
+VALUES
+    (1, 1, 6.50, '6B', 1),
+    (1, 2, 10.50, '6', 2),
+    (1, 3, 5, '6A', 3),
+    (1, 4, 8, '6A', 0),
+    
+    (2, 1, 20, '3A', 1),
+    (2, 2, 18, '3C', 0),
+    
+    (3, 1, 5, '7A', 1),
+    (3, 2, 10, '7A', 2),
+    (3, 3, 11, '7', 3),
+    (3, 4, 14, '7B', 0),
+    
+    (4, 1, 25, '7A', 1),
+    (4, 2, 19, '7', 2),
+    (4, 3, 20, '7C', 0),
+    
+    (5, 1, 10, '4A', 1),
+    (5, 2, 8, '4', 2),
+    (5, 3, 5, '4C', 0)
+
+INSERT INTO public.topo
+    (compte_id, nom, statut, date_upload, description)
+VALUES
+    (1, 'Cap Canaille - Belvédère : Anaconda', 'libre', '2019-10-27', 'Beau et chaud avant que le vent se lève'), 
+    (2, 'Grimpe à Aussois', 'reserver', '2019-09-17', 'Beau puis rapidement le ciel vire au gris, bon réchauffement avec l''apparition du soleil puis doux.'),
+    (3, 'Cap Canaille, le crabe puis', 'libre', '2019-09-29', 'Rocher solide et plutôt adhérent tout du long. Pas encore intégralement sec pour nous des suites des bonnes pluies de la veille...'),
+    (1, 'Dalle de Chantelouve : Voie de Droite', 'libre', '2019-10-14', 'Départ 8h30, 2 h30 dans la voie, rappels 30 min. Global avec approche et manips 4H.'),
+    (2, 'Finale Ligure : In Scio Bolezumme', 'libre', '2019-09-9', 'Ouverture de la voie en solo en 3 jours après avoir fixé jusqu''à R6 les jours précédents. Globalement bon à très bon rocher. je pensais sortir droit au dessus dans les grands plafonds mais il n''y a pas de ligne évidente sauf à planter une ligne de spits')
+
+INSERT INTO public.resa_topo
+    (topo_id, statut, date_debut, date_fin, compte_id, proprietaire_topo)
+VALUES
+    (1, 'demande en cours','2019-05-22', '2019-05-23', 3, 2)
+
+INSERT INTO public.commentaire
+    (compte_id, commentaire, site_id, topo_id)
+VALUES
+    (1, 'Tres belle endroit, je vous le conseil', 3, null),
+    (3, 'Grosse aventure personnelle avec pas mal de phases différentes, l''excitation au début avec une super météo, le doute le lendemain avec la pluie et le perfo en rade.', 1, null),
+    (2, 'Bel enchainement Facile mais engagé pour la belin,2 belles longueurs L1 et L2 surtout', null, 4),
+    (3, 'Pour le couloir sud direct L1 un pas difficile au niveau de la 3eme dégaine puis encore en fin de longueur', null, 5)
+
+INSERT INTO public.photo
+    (nom, url_image, topo_id, site_id)
+VALUES
+    ('Ablon', 'imgs/photo_escalade_1.jpg', null, 1),
+    ('Ailefroide','imgs/photo_escalade_2.jpg', null, 2),
+    ('Grimpe à Aussois','imgs/photo_escalade_3.jpg', 2, null),
+    ('Cap Canaille - Belvédère : Anaconda','imgs/photo_escalade_4.jpg', 1, null),
+    ('Cap Canaille, le crabe puis','imgs/photo_escalade_7.jpg', 3, null),
+    ('Dalle de Chantelouve : Voie de Droite','imgs/photo_escalade_9.jpg', 4, null),
+    ('Finale Ligure : In Scio Bolezumme','imgs/photo_escalade_8.jpg', 5, null)
+
+INSERT INTO public.messagerie
+    (resa_topo_id, date_message, message, compte_id)
+VALUES
+    (1, '2019-05-07', 'Puis je reserver pour le 22 mai svp ?', 1)
